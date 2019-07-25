@@ -9,7 +9,7 @@ FROM gzynda/tacc-centos7:0.0.1
 
 # necessities and IB stack
 RUN yum -y groupinstall "Development tools" \
-    && yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdmacm libxml2-devel \
+    && yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdmacm libxml2-devel numactl-devel \
     && docker-clean
 
 # Install PSM2
@@ -20,7 +20,7 @@ ARG PSMD=opa-psm2-${PSM}_${PSMV}
 RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | tar -xzf - \
     && cd ${PSMD} \
     && make PSM_AVX=1 -j $(nproc --all 2>/dev/null || echo 2) \
-    && make LIBDIR=/usr/lib/x86_64-linux-gnu install \
+    && make install \
     && cd ../ && rm -rf ${PSMD}
 
 # Install mvapich2-2.3
