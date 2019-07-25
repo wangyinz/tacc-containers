@@ -12,8 +12,6 @@ RUN yum -y groupinstall "Development tools" \
     && yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdmacm libxml2-devel \
     && docker-clean
 
-ENV PATH=${PATH}:/usr/lib64/mvapich23-psm2/bin/
-
 # Install PSM2
 ARG PSM=PSM2
 ARG PSMV=11.2.78
