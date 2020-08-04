@@ -59,9 +59,8 @@ RUN source $MPIVARS_SCRIPT \
 RUN source $MPIVARS_SCRIPT \
     mpirun -n 2 hellow
 
-RUN echo '#\!/bin/bash' > /docker-entrypoint.sh
-RUN echo 'source $MPIVARS_SCRIPT' >> /docker-entrypoint.sh
+RUN echo 'source $MPIVARS_SCRIPT' > /docker-entrypoint.sh
 RUN echo 'exec "$@"' >> /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-ENTRYPOINT [“/docker-entrypoint.sh”]
+ENTRYPOINT ["/docker-entrypoint.sh"]
