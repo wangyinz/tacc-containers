@@ -35,14 +35,15 @@ RUN yum-config-manager -y --add-repo https://yum.repos.intel.com/setup/intelprod
 
 ENV MPIVARS_SCRIPT=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
 
-RUN ldconfig && docker-clean
+#RUN ldconfig && docker-clean
 
 
 # Add hello world
-#ADD extras/hello.c /tmp/hello.c
-#RUN mpicc /tmp/hello.c -o /usr/local/bin/hellow \
-#    && rm /tmp/hello.c \
-#    && docker-clean
+ADD extras/hello.c /tmp/hello.c
+RUN source $MPIVARS_SCRIPT \
+    && mpicc /tmp/hello.c -o /usr/local/bin/hellow \
+    && rm /tmp/hello.c \
+    && docker-clean
 
 # Build benchmark programs
 #ARG DIR=osu-micro-benchmarks-5.6.2
