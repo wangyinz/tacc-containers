@@ -59,7 +59,8 @@ RUN source $MPIVARS_SCRIPT \
 RUN source $MPIVARS_SCRIPT \
     mpirun -n 2 hellow
 
-RUN echo '#!/bin/bash\n\
+RUN echo '#\
+!/bin/bash\n\
 source $MPIVARS_SCRIPT\n\
 exec "$@"\n'\
 >> /docker-entrypoint.sh
