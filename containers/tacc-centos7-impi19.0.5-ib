@@ -23,7 +23,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 RUN yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdmacm libxml2-devel ca-certificates \
     && docker-clean
 
-# Install mvapich2-2.3
+# Install impi-19.0.5
 ARG MAJV=19
 ARG MINV=0
 ARG BV=.5
@@ -32,6 +32,10 @@ ARG DIR=intel${MAJV}-${MAJV}.${MINV}${BV}
 RUN yum-config-manager -y --add-repo https://yum.repos.intel.com/setup/intelproducts.repo \
     && yum install -y intel-mpi-20${MAJV}${BV}-075 \
     && docker-clean
+
+ENV MPIVARS_SCRIPT=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
+
+RUN ldconfig && docker-clean
 
 
 # Add hello world
