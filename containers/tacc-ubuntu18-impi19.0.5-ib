@@ -20,6 +20,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 ########################################
 
 # necessities and IB stack
+RUN apt-get update && apt-get install -yq gnupg2
 RUN curl -k -L http://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
 RUN add-apt-repository 'deb http://linux.mellanox.com/public/repo/mlnx_ofed/latest/ubuntu18.04/$(ARCH)/UPSTREAM_LIBS ./'
 RUN apt-get update && \
