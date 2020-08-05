@@ -22,7 +22,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 # necessities and IB stack
 RUN yum-config-manager --add-repo https://linux.mellanox.com/public/repo/mlnx_ofed/latest/rhel7.8/mellanox_mlnx_ofed.repo
 RUN yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdmacm libxml2-devel ca-certificates \
-    numactl-libs ucx \
+    numactl-libs mlnx-ofa_kernel mlnx-ofa_kernel-devel mlnx-ofa_kernel-modules ucx \
     && docker-clean
 
 # Install impi-19.0.5
