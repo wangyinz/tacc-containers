@@ -20,7 +20,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 ########################################
 
 # necessities and IB stack
-RUN curl -L http://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
+RUN curl -k -L http://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | apt-key add -
 RUN add-apt-repository 'deb http://linux.mellanox.com/public/repo/mlnx_ofed/latest/ubuntu18.04/$(ARCH)/UPSTREAM_LIBS ./'
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
@@ -34,7 +34,7 @@ ARG MINV=0
 ARG BV=.5
 ARG DIR=intel${MAJV}-${MAJV}.${MINV}${BV}
 
-RUN curl -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
+RUN curl -k -L https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB | apt-key add -
 RUN echo deb https://apt.repos.intel.com/mpi all main > /etc/apt/sources.list.d/intel-mpi.list
 RUN apt-get update \
     && apt-get install -y intel-mpi-20${MAJV}${BV}-075 \
