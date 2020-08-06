@@ -22,7 +22,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 # necessities and IB stack
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
-	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates libfabric-dev \
+	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates \
 	&& docker-clean
 
 # Install PSM2
@@ -88,7 +88,7 @@ RUN . $MPIVARS_SCRIPT \
 
 RUN echo '#!/bin/bash' > /docker-entrypoint.sh
 RUN echo 'source $MPIVARS_SCRIPT' >> /docker-entrypoint.sh
-RUN echo 'export I_MPI_OFI_LIBRARY=/lib/libfabric.so' >> /docker-entrypoint.sh
+RUN echo 'export I_MPI_OFI_LIBRARY=/usr/lib/libfabric.so' >> /docker-entrypoint.sh
 RUN echo 'exec "$@"' >> /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
