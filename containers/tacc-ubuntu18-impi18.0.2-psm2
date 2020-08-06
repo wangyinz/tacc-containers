@@ -36,6 +36,18 @@ RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | ta
     && make LIBDIR=/usr/lib/x86_64-linux-gnu install \
     && cd ../ && rm -rf ${PSMD}
 
+# Install libfabric
+ARG MAJV=1
+ARG MINV=7
+ARG BV=0
+
+RUN curl -LO https://github.com/ofiwg/libfabric/releases/download/v${MAJV}.${MINV}.${BV}/libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && \
+tar xjf libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && \
+cd libfabric-${MAJV}.${MINV}.${BV} && \
+./configure --enable-psm2=yes --prefix=/usr && \
+make && make install && cd .. && \
+rm -r libfabric-${MAJV}.${MINV}.${BV} libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && docker-clean
+
 # Install impi-19.0.5
 ARG MAJV=18
 ARG MINV=0
@@ -50,7 +62,7 @@ RUN apt-get update \
 
 ENV MPIVARS_SCRIPT=/opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
 ENV I_MPI_LIBRARY_KIND=release_mt
-ENV I_MPI_OFI_LIBRARY_INTERNAL=1
+ENV I_MPI_OFI_LIBRARY_INTERNAL=0
 
 # Add hello world
 ADD extras/hello.c /tmp/hello.c
@@ -76,6 +88,7 @@ RUN . $MPIVARS_SCRIPT \
 
 RUN echo '#!/bin/bash' > /docker-entrypoint.sh
 RUN echo 'source $MPIVARS_SCRIPT' >> /docker-entrypoint.sh
+RUN echo 'export I_MPI_OFI_LIBRARY=/lib/libfabric.so' >> /docker-entrypoint.sh
 RUN echo 'exec "$@"' >> /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
