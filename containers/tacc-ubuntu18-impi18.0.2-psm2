@@ -22,7 +22,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 # necessities and IB stack
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
-	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates \
+	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates ssh \
 	&& docker-clean
 
 # Install PSM2
