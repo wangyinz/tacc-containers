@@ -22,8 +22,7 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 # necessities and IB stack
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
-	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates ssh \
-	linux-firmware \
+	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates \
 	&& docker-clean
 
 # Install PSM2
@@ -39,8 +38,8 @@ RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | ta
 
 # Install libfabric
 ARG MAJV=1
-ARG MINV=8
-ARG BV=1
+ARG MINV=7
+ARG BV=0
 
 RUN curl -LO https://github.com/ofiwg/libfabric/releases/download/v${MAJV}.${MINV}.${BV}/libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && \
 tar xjf libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && \
@@ -84,7 +83,11 @@ RUN . $MPIVARS_SCRIPT \
     && rm -rf /opt/libexec && find /opt \
     && cd ../ && rm -rf ${DIR} && docker-clean
 
-RUN ldconfig && docker-clean
+# Add patch for strtok_r
+ADD extras/strtok_fix.c /tmp/strtok_fix.c
+RUN gcc -shared -o /usr/local/lib/strtok_fix.so -fPIC strtok_fix.c \
+    && rm /tmp/strtok_fix.c \
+    && docker-clean
 
 # Test installation
 RUN . $MPIVARS_SCRIPT \
@@ -93,10 +96,8 @@ RUN . $MPIVARS_SCRIPT \
 RUN echo '#!/bin/bash' > /docker-entrypoint.sh
 RUN echo 'source $MPIVARS_SCRIPT' >> /docker-entrypoint.sh
 RUN echo 'export I_MPI_OFI_LIBRARY=/usr/lib/libfabric.so' >> /docker-entrypoint.sh
+RUN echo 'export LD_PRELOAD=/usr/local/lib/strtok_fix.so:$LD_PRELOAD' >> /docker-entrypoint.sh
 RUN echo 'exec "$@"' >> /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
-
-RUN apt-get update && \
-    apt-get install -yq gdb && docker-clean
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
