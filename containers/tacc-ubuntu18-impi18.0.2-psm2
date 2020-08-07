@@ -83,6 +83,8 @@ RUN . $MPIVARS_SCRIPT \
     && rm -rf /opt/libexec && find /opt \
     && cd ../ && rm -rf ${DIR} && docker-clean
 
+RUN ldconfig && docker-clean
+
 # Test installation
 RUN . $MPIVARS_SCRIPT \
     mpirun -n 2 hellow
