@@ -27,7 +27,7 @@ RUN apt-get update && \
 
 # Install PSM2
 ARG PSM=PSM2
-ARG PSMV=11.2.86
+ARG PSMV=11.2.78
 ARG PSMD=opa-psm2-${PSM}_${PSMV}
 
 RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | tar -xzf - \
