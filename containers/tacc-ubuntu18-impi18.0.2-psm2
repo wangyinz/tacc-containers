@@ -85,7 +85,7 @@ RUN . $MPIVARS_SCRIPT \
 
 # Add patch for strtok_r
 ADD extras/strtok_fix.c /tmp/strtok_fix.c
-RUN gcc -shared -o /usr/local/lib/strtok_fix.so -fPIC strtok_fix.c \
+RUN gcc -shared -o /usr/local/lib/strtok_fix.so -fPIC /tmp/strtok_fix.c \
     && rm /tmp/strtok_fix.c \
     && docker-clean
 
