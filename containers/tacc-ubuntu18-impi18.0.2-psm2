@@ -23,12 +23,12 @@ RUN RF=/etc/${REL}-release; echo ${VER} > $RF && chmod a+r $RF
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends gfortran bison libibverbs-dev libnuma-dev \
 	libibmad-dev libibumad-dev librdmacm-dev libxml2-dev gnupg2 ca-certificates ssh \
-	linux-firmware \
+	linux-firmware libfabric-dev \
 	&& docker-clean
 
 # Install PSM2
 ARG PSM=PSM2
-ARG PSMV=11.2.78
+ARG PSMV=11.2.86
 ARG PSMD=opa-psm2-${PSM}_${PSMV}
 
 RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | tar -xzf - \
@@ -37,19 +37,7 @@ RUN curl -L https://github.com/intel/opa-psm2/archive/${PSM}_${PSMV}.tar.gz | ta
     && make LIBDIR=/usr/lib/x86_64-linux-gnu install \
     && cd ../ && rm -rf ${PSMD}
 
-# Install libfabric
-ARG MAJV=1
-ARG MINV=7
-ARG BV=0
-
-RUN curl -LO https://github.com/ofiwg/libfabric/releases/download/v${MAJV}.${MINV}.${BV}/libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && \
-tar xjf libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && \
-cd libfabric-${MAJV}.${MINV}.${BV} && \
-./configure --enable-psm2=yes --prefix=/usr && \
-make && make install && cd .. && \
-rm -r libfabric-${MAJV}.${MINV}.${BV} libfabric-${MAJV}.${MINV}.${BV}.tar.bz2 && docker-clean
-
-# Install impi-19.0.5
+# Install impi-18.0.2
 ARG MAJV=18
 ARG MINV=0
 ARG BV=.2
@@ -91,7 +79,7 @@ RUN . $MPIVARS_SCRIPT \
 
 RUN echo '#!/bin/bash' > /docker-entrypoint.sh
 RUN echo 'source $MPIVARS_SCRIPT' >> /docker-entrypoint.sh
-RUN echo 'export I_MPI_OFI_LIBRARY=/usr/lib/libfabric.so' >> /docker-entrypoint.sh
+RUN echo 'export I_MPI_OFI_LIBRARY=/usr/lib/x86_64-linux-gnu/libfabric.so' >> /docker-entrypoint.sh
 RUN echo 'exec "$@"' >> /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
