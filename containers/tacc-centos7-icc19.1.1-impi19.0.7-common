@@ -32,8 +32,7 @@ RUN yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdma
 ADD extras/config.cfg /tmp/icc-config.cfg
 
 RUN cd /tmp \
-    && wget -O icc.tgz http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16530/parallel_studio_xe_2020_update1_composer_edition.tgz \
-    && tar -xvzf icc.tgz \
+    && curl http://registrationcenter-download.intel.com/akdlm/irc_nas/tec/16530/parallel_studio_xe_2020_update1_composer_edition.tgz | tar -xzf - \
     && cd /tmp/parallel_studio_xe_* \
     && bash ./install.sh --silent=/tmp/icc-config.cfg \
     && cd .. \
