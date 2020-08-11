@@ -28,7 +28,7 @@ RUN yum -y install libgfortran libibmad-devel libibumad libibverbs-devel librdma
     && docker-clean
 
 
-# Indysll Intel compilers
+# Install Intel compilers
 RUN echo '[oneAPI]' > /etc/yum.repos.d/oneAPI.repo
 RUN echo 'name=Intel(R) oneAPI repository' >> /etc/yum.repos.d/oneAPI.repo
 RUN echo 'baseurl=https://yum.repos.intel.com/oneapi' >> /etc/yum.repos.d/oneAPI.repo
@@ -40,10 +40,12 @@ RUN yum install -y intel-oneapi-icc intel-oneapi-ifort \
         intel-oneapi-mkl-devel intel-oneapi-openmp intel-oneapi-tbb-devel \
     && docker-clean
 
-RUN echo 'if [ -z "$ONEAPI_SH_GUARD" ]; then' > /etc/profile.d/oneapi.sh
-RUN echo '  source /opt/intel/oneapi/setvars.sh' >> /etc/profile.d/oneapi.sh
-RUN echo 'fi' >> /etc/profile.d/oneapi.sh
-RUN echo 'export ONEAPI_SH_GUARD=1' >> /etc/profile.d/oneapi.sh
+ENV ONEAPIVARS_SCRIPT=/opt/intel/oneapi/setvars.sh
+ENV I_MPI_CC=icc
+ENV I_MPI_CXX=icpc
+ENV I_MPI_F77=ifort
+ENV I_MPI_F90=ifort
+ENV I_MPI_FC=ifort
 
 # Install impi-19.0.5
 ARG MAJV=19
@@ -61,14 +63,16 @@ ENV I_MPI_OFI_LIBRARY_INTERNAL=1
 
 # Add hello world
 ADD extras/hello.c /tmp/hello.c
-RUN source $MPIVARS_SCRIPT \
+RUN source $ONEAPIVARS_SCRIPT \
+    && source $MPIVARS_SCRIPT \
     && mpicc /tmp/hello.c -o /usr/local/bin/hellow \
     && rm /tmp/hello.c \
     && docker-clean
 
 # Build benchmark programs
 ARG DIR=osu-micro-benchmarks-5.6.2
-RUN source $MPIVARS_SCRIPT \
+RUN source $ONEAPIVARS_SCRIPT \
+    && source $MPIVARS_SCRIPT \
     && curl http://mvapich.cse.ohio-state.edu/download/mvapich/${DIR}.tar.gz | tar -xzf - \
     && cd ${DIR} \
     && ./configure --prefix=/opt/ CC=$(which mpicc) CXX=$(which mpicxx) \
@@ -82,6 +86,7 @@ RUN source $MPIVARS_SCRIPT \
     mpirun -n 2 hellow
 
 RUN echo '#!/bin/bash' > /docker-entrypoint.sh
+RUN echo 'source $ONEAPIVARS_SCRIPT' >> /docker-entrypoint.sh
 RUN echo 'source $MPIVARS_SCRIPT' >> /docker-entrypoint.sh
 RUN echo 'export I_MPI_REMOVED_VAR_WARNING=0' >> /docker-entrypoint.sh
 RUN echo 'export I_MPI_VAR_CHECK_SPELLING=0' >> /docker-entrypoint.sh
