@@ -42,8 +42,6 @@ RUN cd /tmp \
     && rm /tmp/icc-config.cfg \
     && docker-clean
 
-ADD extras/intel.sh /etc/profile.d/intel.sh
-
 # Install impi-19.0.7
 ARG MAJV=19
 ARG MINV=0
